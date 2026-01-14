@@ -385,6 +385,20 @@
         <p class="text-white/80 text-sm sm:text-base md:text-lg">🎮 Made with 💖 for little learners! 🌟</p>
     </footer>
 
+    <!-- Letter Pop-up Modal -->
+    <div id="letterModal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-3 sm:p-4">
+        <div class="relative bg-gradient-to-br from-yellow-100 via-pink-100 to-purple-100 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 max-w-xs sm:max-w-sm md:max-w-md w-full mx-2 text-center transform animate-pop shadow-2xl border-4 border-yellow-400">
+            <button id="closeLetterModal" class="absolute top-2 right-2 sm:top-3 sm:right-3 text-2xl sm:text-3xl text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">✖️</button>
+            <p id="letterEmoji" class="text-6xl sm:text-7xl md:text-8xl mb-3 sm:mb-4 animate-bounce"></p>
+            <h2 id="letterTitle" class="title-font text-4xl sm:text-5xl md:text-6xl text-purple-600 mb-2 sm:mb-3"></h2>
+            <p id="letterWord" class="text-xl sm:text-2xl md:text-3xl text-pink-500 font-bold mb-4 sm:mb-5"></p>
+            <button id="sayAgainBtn" 
+                    class="bg-gradient-to-r from-green-400 to-blue-500 text-white text-base sm:text-lg md:text-xl font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-full active:scale-95 transition-transform cursor-pointer shadow-lg">
+                🔊 Say Again!
+            </button>
+        </div>
+    </div>
+
     <!-- Win Modal -->
     <div id="winModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
         <div class="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 max-w-sm sm:max-w-md w-full mx-2 text-center transform">
@@ -414,6 +428,15 @@
         const messageText = document.getElementById('messageText');
         const winModal = document.getElementById('winModal');
         const playAgainBtn = document.getElementById('playAgainBtn');
+
+        // Letter Modal Elements
+        const letterModal = document.getElementById('letterModal');
+        const letterEmoji = document.getElementById('letterEmoji');
+        const letterTitle = document.getElementById('letterTitle');
+        const letterWord = document.getElementById('letterWord');
+        const closeLetterModal = document.getElementById('closeLetterModal');
+        const sayAgainBtn = document.getElementById('sayAgainBtn');
+        let currentLetterData = null;
 
         // Alphabet data
         const alphabet = [
@@ -553,6 +576,36 @@
             }
         }
 
+        function showLetterPopup(letterData) {
+            currentLetterData = letterData;
+            
+            // Update modal content
+            letterEmoji.textContent = letterData.emoji;
+            letterTitle.textContent = letterData.letter;
+            letterWord.textContent = `${letterData.letter} is for ${letterData.word}!`;
+            
+            // Show modal
+            letterModal.classList.remove('hidden');
+            
+            // Speak the letter
+            speakLetter(letterData);
+        }
+
+        function speakLetter(letterData) {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(`${letterData.letter} is for ${letterData.word}`);
+                utterance.rate = 0.8;
+                utterance.pitch = 1.2;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function closeLetterPopup() {
+            letterModal.classList.add('hidden');
+            currentLetterData = null;
+        }
+
         function showMessage() {
             if (playerPosition >= 26) {
                 // Player won!
@@ -562,23 +615,8 @@
                 }, 300);
             } else if (playerPosition >= 0) {
                 const letterData = alphabet[playerPosition];
-                messageBox.classList.remove('hidden');
-                messageText.innerHTML = `${letterData.emoji} <span class="text-pink-500">${letterData.letter}</span> is for <span class="text-green-500">${letterData.word}</span>! ${letterData.emoji}`;
-                
-                // Speak the letter (if supported)
-                if ('speechSynthesis' in window) {
-                    // Cancel any ongoing speech
-                    speechSynthesis.cancel();
-                    const utterance = new SpeechSynthesisUtterance(`${letterData.letter} is for ${letterData.word}`);
-                    utterance.rate = 0.8;
-                    utterance.pitch = 1.2;
-                    speechSynthesis.speak(utterance);
-                }
-
-                // Hide message after 3 seconds
-                setTimeout(() => {
-                    messageBox.classList.add('hidden');
-                }, 3000);
+                // Show letter popup instead of simple message
+                showLetterPopup(letterData);
             }
         }
 
@@ -627,28 +665,48 @@
         diceBtn.addEventListener('click', rollDice);
         playAgainBtn.addEventListener('click', resetGame);
 
-        // Click on tiles to hear the letter
+        // Letter Modal Event Listeners
+        closeLetterModal.addEventListener('click', closeLetterPopup);
+        sayAgainBtn.addEventListener('click', () => {
+            if (currentLetterData) {
+                speakLetter(currentLetterData);
+            }
+        });
+
+        // Close modal when clicking outside
+        letterModal.addEventListener('click', (e) => {
+            if (e.target === letterModal) {
+                closeLetterPopup();
+            }
+        });
+
+        // Click on tiles to show popup and hear the letter
         document.querySelectorAll('.letter-tile[data-letter]').forEach(tile => {
             tile.addEventListener('click', () => {
                 const letter = tile.dataset.letter;
                 const letterData = alphabet.find(a => a.letter === letter);
-                if (letterData && 'speechSynthesis' in window) {
-                    speechSynthesis.cancel();
-                    const utterance = new SpeechSynthesisUtterance(`${letterData.letter} is for ${letterData.word}`);
-                    utterance.rate = 0.8;
-                    utterance.pitch = 1.2;
-                    speechSynthesis.speak(utterance);
+                if (letterData) {
+                    // Show popup with pronunciation
+                    showLetterPopup(letterData);
                     
-                    // Visual feedback
+                    // Visual feedback on tile
                     tile.classList.add('animate-pop');
                     setTimeout(() => tile.classList.remove('animate-pop'), 300);
                 }
             });
         });
 
-        // Keyboard support - press space or enter to roll
+        // Keyboard support - press space or enter to roll, Escape to close modal
         document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' || e.code === 'Enter') {
+            if (e.code === 'Escape') {
+                closeLetterPopup();
+            } else if ((e.code === 'Space' || e.code === 'Enter') && !letterModal.classList.contains('hidden')) {
+                // If modal is open, say again on Space/Enter
+                e.preventDefault();
+                if (currentLetterData) {
+                    speakLetter(currentLetterData);
+                }
+            } else if (e.code === 'Space' || e.code === 'Enter') {
                 e.preventDefault();
                 rollDice();
             }

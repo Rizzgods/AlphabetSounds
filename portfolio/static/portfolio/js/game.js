@@ -153,6 +153,45 @@ function updatePlayerVisual(pos) {
     }
 }
 
+// Letter Modal Elements
+const letterModal = document.getElementById('letterModal');
+const letterEmoji = document.getElementById('letterEmoji');
+const letterTitle = document.getElementById('letterTitle');
+const letterWord = document.getElementById('letterWord');
+const closeLetterModal = document.getElementById('closeLetterModal');
+const sayAgainBtn = document.getElementById('sayAgainBtn');
+let currentLetterData = null;
+
+function showLetterPopup(letterData) {
+    currentLetterData = letterData;
+    
+    // Update modal content
+    letterEmoji.textContent = letterData.emoji;
+    letterTitle.textContent = letterData.letter;
+    letterWord.textContent = `${letterData.letter} is for ${letterData.word}!`;
+    
+    // Show modal
+    letterModal.classList.remove('hidden');
+    
+    // Speak the letter
+    speakLetter(letterData);
+}
+
+function speakLetter(letterData) {
+    if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(`${letterData.letter} is for ${letterData.word}`);
+        utterance.rate = 0.8;
+        utterance.pitch = 1.2;
+        speechSynthesis.speak(utterance);
+    }
+}
+
+function closeLetterPopup() {
+    letterModal.classList.add('hidden');
+    currentLetterData = null;
+}
+
 function showMessage() {
     if (playerPosition >= 26) {
         // Player won!
@@ -162,23 +201,8 @@ function showMessage() {
         }, 300);
     } else if (playerPosition >= 0) {
         const letterData = alphabet[playerPosition];
-        messageBox.classList.remove('hidden');
-        messageText.innerHTML = `${letterData.emoji} <span class="text-pink-500">${letterData.letter}</span> is for <span class="text-green-500">${letterData.word}</span>! ${letterData.emoji}`;
-        
-        // Speak the letter (if supported)
-        if ('speechSynthesis' in window) {
-            // Cancel any ongoing speech
-            speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(`${letterData.letter} is for ${letterData.word}`);
-            utterance.rate = 0.8;
-            utterance.pitch = 1.2;
-            speechSynthesis.speak(utterance);
-        }
-
-        // Hide message after 3 seconds
-        setTimeout(() => {
-            messageBox.classList.add('hidden');
-        }, 3000);
+        // Show letter popup instead of simple message
+        showLetterPopup(letterData);
     }
 }
 
@@ -227,28 +251,48 @@ function resetGame() {
 diceBtn.addEventListener('click', rollDice);
 playAgainBtn.addEventListener('click', resetGame);
 
-// Click on tiles to hear the letter
+// Letter Modal Event Listeners
+closeLetterModal.addEventListener('click', closeLetterPopup);
+sayAgainBtn.addEventListener('click', () => {
+    if (currentLetterData) {
+        speakLetter(currentLetterData);
+    }
+});
+
+// Close modal when clicking outside
+letterModal.addEventListener('click', (e) => {
+    if (e.target === letterModal) {
+        closeLetterPopup();
+    }
+});
+
+// Click on tiles to hear the letter and show popup
 document.querySelectorAll('.letter-tile[data-letter]').forEach(tile => {
     tile.addEventListener('click', () => {
         const letter = tile.dataset.letter;
         const letterData = alphabet.find(a => a.letter === letter);
-        if (letterData && 'speechSynthesis' in window) {
-            speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(`${letterData.letter} is for ${letterData.word}`);
-            utterance.rate = 0.8;
-            utterance.pitch = 1.2;
-            speechSynthesis.speak(utterance);
+        if (letterData) {
+            // Show popup with pronunciation
+            showLetterPopup(letterData);
             
-            // Visual feedback
+            // Visual feedback on tile
             tile.classList.add('animate-pop');
             setTimeout(() => tile.classList.remove('animate-pop'), 300);
         }
     });
 });
 
-// Keyboard support - press space or enter to roll
+// Keyboard support - press space or enter to roll, Escape to close modal
 document.addEventListener('keydown', (e) => {
-    if (e.code === 'Space' || e.code === 'Enter') {
+    if (e.code === 'Escape') {
+        closeLetterPopup();
+    } else if ((e.code === 'Space' || e.code === 'Enter') && !letterModal.classList.contains('hidden')) {
+        // If modal is open, say again on Space/Enter
+        e.preventDefault();
+        if (currentLetterData) {
+            speakLetter(currentLetterData);
+        }
+    } else if (e.code === 'Space' || e.code === 'Enter') {
         e.preventDefault();
         rollDice();
     }
