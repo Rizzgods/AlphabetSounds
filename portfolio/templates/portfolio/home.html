@@ -3,289 +3,659 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ name }} - Portfolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>🎲 Alphabet Adventure Game!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Fredoka+One&display=swap" rel="stylesheet">
     <style>
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
-
+        html, body {
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            font-family: 'Bubblegum Sans', cursive;
+            padding-bottom: env(safe-area-inset-bottom);
         }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 20px;
+        .title-font {
+            font-family: 'Fredoka One', cursive;
         }
-
-        /* Hero Section */
-        .hero {
-            text-align: center;
-            padding: 80px 20px;
-            color: white;
+        @keyframes bounce-custom {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
-
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
         }
-
-        .hero .title {
-            font-size: 1.5rem;
-            opacity: 0.9;
-            margin-bottom: 20px;
+        @keyframes dice-roll {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(90deg) scale(1.2); }
+            50% { transform: rotate(180deg) scale(1); }
+            75% { transform: rotate(270deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
         }
-
-        .hero .bio {
-            max-width: 600px;
-            margin: 0 auto 30px;
-            font-size: 1.1rem;
-            opacity: 0.85;
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
         }
-
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-
-        .social-links a {
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            border: 2px solid white;
-            border-radius: 25px;
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+        .animate-bounce-custom {
+            animation: bounce-custom 2s infinite;
+        }
+        .animate-wiggle {
+            animation: wiggle 0.5s infinite;
+        }
+        .animate-dice-roll {
+            animation: dice-roll 0.5s ease-in-out;
+        }
+        .animate-pop {
+            animation: pop 0.3s ease-in-out;
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        .rainbow-bg {
+            background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
+            background-size: 400% 400%;
+            animation: rainbow 8s ease infinite;
+        }
+        .letter-tile {
             transition: all 0.3s ease;
         }
-
-        .social-links a:hover {
-            background: white;
-            color: #667eea;
+        .letter-tile:hover {
+            transform: scale(1.1) rotate(5deg);
         }
-
-        /* Section Styles */
-        section {
-            background: white;
-            margin: 20px 0;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        .player-marker {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            z-index: 10;
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));
         }
-
-        section h2 {
-            color: #667eea;
-            margin-bottom: 30px;
-            font-size: 2rem;
-            text-align: center;
-        }
-
-        /* Projects Grid */
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-        }
-
-        .project-card {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 10px;
-            transition: transform 0.3s ease;
-        }
-
-        .project-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .project-card h3 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .project-card p {
-            color: #666;
-            margin-bottom: 15px;
-        }
-
-        .project-card .tech {
-            display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            margin-bottom: 10px;
-        }
-
-        .project-card a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .project-card a:hover {
-            text-decoration: underline;
-        }
-
-        /* Skills */
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .skill-item {
-            margin-bottom: 15px;
-        }
-
-        .skill-item .skill-name {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-        }
-
-        .skill-bar {
-            height: 10px;
-            background: #e0e0e0;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .skill-bar .fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            border-radius: 5px;
-        }
-
-        /* Contact */
-        .contact-info {
-            text-align: center;
-        }
-
-        .contact-info p {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-        }
-
-        .contact-info a {
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        .contact-info a:hover {
-            text-decoration: underline;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            color: #666;
-            padding: 40px;
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 30px;
-            color: white;
-            opacity: 0.8;
-        }
-
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
+        @media (min-width: 640px) {
+            .player-marker {
+                top: -15px;
+                font-size: 1.8rem;
             }
-            
-            section {
-                padding: 25px;
-            }
+        }
+        .confetti {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        .dice-btn:active {
+            transform: scale(0.95);
+        }
+        .current-tile {
+            box-shadow: 0 0 20px 5px rgba(255, 215, 0, 0.8);
         }
     </style>
 </head>
-<body>
-    <!-- Hero Section -->
-    <header class="hero">
-        <div class="container">
-            <h1>{{ name }}</h1>
-            <p class="title">{{ title }}</p>
-            <p class="bio">{{ bio }}</p>
-            <div class="social-links">
-                <a href="mailto:{{ email }}">📧 Email</a>
-                <a href="{{ github }}" target="_blank">💻 GitHub</a>
-                <a href="{{ linkedin }}" target="_blank">💼 LinkedIn</a>
-            </div>
-        </div>
+<body class="min-h-screen bg-gradient-to-br from-pink-300 via-purple-300 to-indigo-400">
+    <!-- Floating Decorations - Hidden on mobile for cleaner look -->
+    <div class="hidden sm:block fixed top-10 left-10 text-6xl animate-bounce-custom opacity-60 pointer-events-none">🌟</div>
+    <div class="hidden sm:block fixed top-20 right-20 text-5xl animate-bounce-custom opacity-60 pointer-events-none" style="animation-delay: 0.5s;">🎈</div>
+    <div class="hidden sm:block fixed bottom-32 left-16 text-5xl animate-bounce-custom opacity-60 pointer-events-none" style="animation-delay: 1s;">🦋</div>
+    <div class="hidden sm:block fixed bottom-20 right-16 text-6xl animate-bounce-custom opacity-60 pointer-events-none" style="animation-delay: 1.5s;">🌈</div>
+    <div class="hidden md:block fixed top-1/2 left-5 text-4xl animate-float opacity-50 pointer-events-none">⭐</div>
+    <div class="hidden md:block fixed top-1/3 right-8 text-4xl animate-float opacity-50 pointer-events-none" style="animation-delay: 1s;">🎀</div>
+
+    <!-- Header -->
+    <header class="text-center py-4 sm:py-6 md:py-8">
+        <h1 class="title-font text-2xl sm:text-4xl md:text-6xl lg:text-7xl text-white drop-shadow-lg mb-1 sm:mb-2 md:mb-4 px-2">
+            🎲 Alphabet Adventure! 🎲
+        </h1>
+        <p class="text-base sm:text-lg md:text-2xl text-white/90 drop-shadow px-2">
+            Roll the dice and learn your ABCs! 🎉
+        </p>
     </header>
 
-    <div class="container">
-        <!-- Projects Section -->
-        <section id="projects">
-            <h2>🚀 My Projects</h2>
-            {% if projects %}
-                <div class="projects-grid">
-                    {% for project in projects %}
-                        <div class="project-card">
-                            <h3>{{ project.title }}</h3>
-                            <span class="tech">{{ project.technology }}</span>
-                            <p>{{ project.description }}</p>
-                            {% if project.link %}
-                                <a href="{{ project.link }}" target="_blank">View Project →</a>
-                            {% endif %}
+    <!-- Game Container -->
+    <div class="container mx-auto px-2 sm:px-3 md:px-4 pb-6 max-w-6xl">
+        <!-- Game Stats & Controls -->
+        <div class="bg-white/95 backdrop-blur rounded-2xl sm:rounded-3xl shadow-2xl p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border-4 border-yellow-400">
+            <!-- Mobile: Dice button prominent at top -->
+            <div class="flex flex-col gap-3 sm:gap-4">
+                <!-- Dice Section - Always centered and prominent -->
+                <div class="flex flex-col items-center gap-2 sm:gap-3">
+                    <button id="diceBtn" 
+                            class="dice-btn bg-gradient-to-br from-red-400 to-red-600 hover:from-red-500 hover:to-red-700 
+                                   text-white text-xl sm:text-2xl md:text-3xl font-bold py-4 sm:py-5 md:py-6 px-10 sm:px-12 md:px-14 rounded-2xl 
+                                   shadow-lg hover:shadow-xl transform active:scale-95
+                                   transition-all duration-200 border-4 border-white
+                                   flex items-center gap-2 sm:gap-3 cursor-pointer min-h-[60px]">
+                        <span id="diceIcon" class="text-3xl sm:text-4xl md:text-5xl">🎲</span>
+                        <span class="title-font">ROLL!</span>
+                    </button>
+                    <div class="bg-yellow-100 rounded-xl px-4 sm:px-5 md:px-6 py-2 border-2 border-yellow-400">
+                        <p class="text-base sm:text-lg md:text-xl text-center">
+                            You rolled: <span id="diceResult" class="title-font text-xl sm:text-2xl md:text-3xl text-red-500">-</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Stats Row -->
+                <div class="flex justify-between items-center gap-2 sm:gap-4">
+                    <!-- Player Info -->
+                    <div class="flex items-center gap-2 sm:gap-3 flex-1">
+                        <div class="text-3xl sm:text-4xl md:text-5xl animate-float">🧒</div>
+                        <div class="min-w-0">
+                            <p class="text-xs sm:text-sm md:text-lg text-purple-600 font-bold">Position</p>
+                            <p class="text-lg sm:text-2xl md:text-3xl title-font text-pink-500 truncate" id="currentLetter">START 🏁</p>
                         </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="empty-state">
-                    <p>Projects coming soon! Add them via the admin panel.</p>
-                </div>
-            {% endif %}
-        </section>
+                    </div>
 
-        <!-- Skills Section -->
-        <section id="skills">
-            <h2>💡 Skills</h2>
-            {% if skills %}
-                <div class="skills-grid">
-                    {% for skill in skills %}
-                        <div class="skill-item">
-                            <div class="skill-name">
-                                <span>{{ skill.name }}</span>
-                                <span>{{ skill.proficiency }}%</span>
-                            </div>
-                            <div class="skill-bar">
-                                <div class="fill" style="width: {{ skill.proficiency }}%"></div>
-                            </div>
-                        </div>
-                    {% endfor %}
+                    <!-- Score -->
+                    <div class="text-center bg-gradient-to-br from-green-400 to-green-500 p-2 sm:p-3 md:p-4 rounded-xl sm:rounded-2xl shadow-lg flex-shrink-0">
+                        <p class="text-white text-xs sm:text-sm md:text-base">Steps</p>
+                        <p class="title-font text-2xl sm:text-xl sm:text-2xl md:text-4xl text-white" id="totalSteps">0</p>
+                    </div>
                 </div>
-            {% else %}
-                <div class="empty-state">
-                    <p>Skills coming soon! Add them via the admin panel.</p>
-                </div>
-            {% endif %}
-        </section>
-
-        <!-- Contact Section -->
-        <section id="contact">
-            <h2>📬 Get In Touch</h2>
-            <div class="contact-info">
-                <p>Feel free to reach out!</p>
-                <p><a href="mailto:{{ email }}">{{ email }}</a></p>
             </div>
-        </section>
+        </div>
+
+        <!-- Alphabet Board -->
+        <div class="bg-white/95 backdrop-blur rounded-2xl sm:rounded-3xl shadow-2xl p-2 sm:p-4 md:p-6 border-4 border-green-400 mb-4 sm:mb-6">
+            <h2 class="title-font text-lg sm:text-2xl md:text-3xl text-center text-purple-600 mb-2 sm:mb-4 md:mb-6">🌈 The Alphabet Path 🌈</h2>
+            
+            <!-- Game Board Grid - Optimized for mobile -->
+            <div class="grid grid-cols-5 sm:grid-cols-7 md:grid-cols-7 lg:grid-cols-9 gap-1.5 sm:gap-2 md:gap-3" id="gameBoard">
+                <!-- Start Tile -->
+                <div class="relative letter-tile bg-gradient-to-br from-green-400 to-green-500 rounded-lg sm:rounded-xl md:rounded-2xl p-2 sm:p-3 md:p-5 text-center shadow-lg border-2 sm:border-3 md:border-4 border-white cursor-pointer current-tile"
+                     data-position="-1" id="tile-start">
+                    <span class="player-marker" id="player-start">🚀</span>
+                    <span class="text-xl sm:text-2xl md:text-4xl">🏁</span>
+                    <p class="text-[10px] sm:text-xs md:text-base text-white font-bold mt-0.5 sm:mt-1">START</p>
+                </div>
+                
+                <!-- Alphabet Tiles A-Z -->
+                <div class="relative letter-tile bg-gradient-to-br from-red-400 to-red-500 rounded-lg sm:rounded-xl md:rounded-2xl p-2 sm:p-3 md:p-5 text-center shadow-lg border-2 sm:border-3 md:border-4 border-white cursor-pointer"
+                     data-position="0" data-letter="A" id="tile-0">
+                    <span class="player-marker hidden" id="player-0">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">A</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🐊</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-orange-400 to-orange-500 rounded-lg sm:rounded-xl md:rounded-2xl p-2 sm:p-3 md:p-5 text-center shadow-lg border-2 sm:border-3 md:border-4 border-white cursor-pointer"
+                     data-position="1" data-letter="B" id="tile-1">
+                    <span class="player-marker hidden" id="player-1">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">B</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🐻</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="2" data-letter="C" id="tile-2">
+                    <span class="player-marker hidden" id="player-2">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">C</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🐱</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-lime-400 to-lime-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="3" data-letter="D" id="tile-3">
+                    <span class="player-marker hidden" id="player-3">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">D</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🐕</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-green-400 to-green-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="4" data-letter="E" id="tile-4">
+                    <span class="player-marker hidden" id="player-4">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">E</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🐘</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-teal-400 to-teal-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="5" data-letter="F" id="tile-5">
+                    <span class="player-marker hidden" id="player-5">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">F</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🦊</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-cyan-400 to-cyan-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="6" data-letter="G" id="tile-6">
+                    <span class="player-marker hidden" id="player-6">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">G</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🦒</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-blue-400 to-blue-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="7" data-letter="H" id="tile-7">
+                    <span class="player-marker hidden" id="player-7">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">H</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🦛</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-indigo-400 to-indigo-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="8" data-letter="I" id="tile-8">
+                    <span class="player-marker hidden" id="player-8">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">I</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🦎</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-purple-400 to-purple-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="9" data-letter="J" id="tile-9">
+                    <span class="player-marker hidden" id="player-9">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">J</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🐆</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="10" data-letter="K" id="tile-10">
+                    <span class="player-marker hidden" id="player-10">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">K</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🐨</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-rose-400 to-rose-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="11" data-letter="L" id="tile-11">
+                    <span class="player-marker hidden" id="player-11">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">L</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🦁</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-red-400 to-red-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="12" data-letter="M" id="tile-12">
+                    <span class="player-marker hidden" id="player-12">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">M</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🐒</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-orange-400 to-orange-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="13" data-letter="N" id="tile-13">
+                    <span class="player-marker hidden" id="player-13">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">N</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🦎</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-amber-400 to-amber-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="14" data-letter="O" id="tile-14">
+                    <span class="player-marker hidden" id="player-14">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">O</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🦉</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="15" data-letter="P" id="tile-15">
+                    <span class="player-marker hidden" id="player-15">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">P</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🦜</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-lime-400 to-lime-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="16" data-letter="Q" id="tile-16">
+                    <span class="player-marker hidden" id="player-16">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">Q</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🐦</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-green-400 to-green-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="17" data-letter="R" id="tile-17">
+                    <span class="player-marker hidden" id="player-17">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">R</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🐰</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="18" data-letter="S" id="tile-18">
+                    <span class="player-marker hidden" id="player-18">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">S</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🐍</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-teal-400 to-teal-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="19" data-letter="T" id="tile-19">
+                    <span class="player-marker hidden" id="player-19">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">T</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🐯</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-cyan-400 to-cyan-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="20" data-letter="U" id="tile-20">
+                    <span class="player-marker hidden" id="player-20">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">U</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🦄</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-sky-400 to-sky-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="21" data-letter="V" id="tile-21">
+                    <span class="player-marker hidden" id="player-21">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">V</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🦅</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-blue-400 to-blue-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="22" data-letter="W" id="tile-22">
+                    <span class="player-marker hidden" id="player-22">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">W</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🐺</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-indigo-400 to-indigo-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="23" data-letter="X" id="tile-23">
+                    <span class="player-marker hidden" id="player-23">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">X</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🐟</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-violet-400 to-violet-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="24" data-letter="Y" id="tile-24">
+                    <span class="player-marker hidden" id="player-24">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">Y</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🐃</p>
+                </div>
+                <div class="relative letter-tile bg-gradient-to-br from-purple-400 to-purple-500 rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="25" data-letter="Z" id="tile-25">
+                    <span class="player-marker hidden" id="player-25">🚀</span>
+                    <span class="title-font text-2xl sm:text-2xl sm:text-3xl md:text-5xl text-white drop-shadow">Z</span>
+                    <p class="text-base sm:text-lg md:text-2xl mt-0.5 sm:mt-1">🦓</p>
+                </div>
+                
+                <!-- Finish Tile -->
+                <div class="relative letter-tile rainbow-bg rounded-xl md:rounded-2xl p-3 md:p-5 text-center shadow-lg border-3 md:border-4 border-white cursor-pointer"
+                     data-position="26" id="tile-finish">
+                    <span class="player-marker hidden" id="player-finish">🚀</span>
+                    <span class="text-xl sm:text-2xl md:text-4xl">🏆</span>
+                    <p class="text-sm md:text-base text-white font-bold mt-1">WIN!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Message Box -->
+        <div id="messageBox" class="hidden bg-white/95 backdrop-blur rounded-3xl shadow-2xl p-6 md:p-8 border-4 border-pink-400 text-center mb-6">
+            <p id="messageText" class="title-font text-2xl md:text-3xl text-purple-600"></p>
+        </div>
+
+        <!-- Instructions - Collapsible on mobile -->
+        <details class="bg-white/95 backdrop-blur rounded-2xl sm:rounded-3xl shadow-2xl border-4 border-blue-400 group" open>
+            <summary class="title-font text-lg sm:text-xl md:text-2xl text-center text-blue-600 p-3 sm:p-4 cursor-pointer list-none flex items-center justify-center gap-2">
+                📖 How to Play <span class="text-sm group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <div class="grid grid-cols-3 gap-1.5 sm:gap-2 md:gap-4 text-center p-2 sm:p-4 pt-0">
+                <div class="bg-pink-100 rounded-lg sm:rounded-xl md:rounded-2xl p-2 sm:p-3 md:p-4">
+                    <span class="text-xl sm:text-2xl md:text-4xl">1️⃣</span>
+                    <p class="text-xs sm:text-sm md:text-lg text-pink-600 mt-1">Tap ROLL!</p>
+                </div>
+                <div class="bg-yellow-100 rounded-lg sm:rounded-xl md:rounded-2xl p-2 sm:p-3 md:p-4">
+                    <span class="text-xl sm:text-2xl md:text-4xl">2️⃣</span>
+                    <p class="text-xs sm:text-sm md:text-lg text-yellow-600 mt-1">Watch 🚀</p>
+                </div>
+                <div class="bg-green-100 rounded-lg sm:rounded-xl md:rounded-2xl p-2 sm:p-3 md:p-4">
+                    <span class="text-xl sm:text-2xl md:text-4xl">3️⃣</span>
+                    <p class="text-xs sm:text-sm md:text-lg text-green-600 mt-1">Learn!</p>
+                </div>
+            </div>
+        </details>
     </div>
 
-    <footer>
-        <p>&copy; 2026 {{ name }}. All rights reserved.</p>
+    <!-- Footer -->
+    <footer class="text-center py-3 sm:py-4 md:py-6">
+        <p class="text-white/80 text-sm sm:text-base md:text-lg">🎮 Made with 💖 for little learners! 🌟</p>
     </footer>
+
+    <!-- Win Modal -->
+    <div id="winModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
+        <div class="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 max-w-sm sm:max-w-md w-full mx-2 text-center transform">
+            <h2 class="title-font text-2xl sm:text-xl sm:text-2xl md:text-4xl text-purple-600 mb-3 sm:mb-4">🎉 YOU WIN! 🎉</h2>
+            <p class="text-4xl sm:text-5xl md:text-6xl mb-3 sm:mb-4">🏆</p>
+            <p class="text-base sm:text-lg md:text-xl text-gray-600 mb-4 sm:mb-5 md:mb-6">Amazing! You learned all 26 letters!</p>
+            <button id="playAgainBtn" 
+                    class="bg-gradient-to-r from-pink-500 to-purple-500 text-white text-base sm:text-lg md:text-xl font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-full active:scale-95 transition-transform cursor-pointer w-full sm:w-auto">
+                🔄 Play Again!
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let playerPosition = -1; // -1 = start position
+        let totalSteps = 0;
+        let isRolling = false;
+
+        // DOM Elements
+        const diceBtn = document.getElementById('diceBtn');
+        const diceIcon = document.getElementById('diceIcon');
+        const diceResult = document.getElementById('diceResult');
+        const currentLetter = document.getElementById('currentLetter');
+        const totalStepsEl = document.getElementById('totalSteps');
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
+        const winModal = document.getElementById('winModal');
+        const playAgainBtn = document.getElementById('playAgainBtn');
+
+        // Alphabet data
+        const alphabet = [
+            { letter: 'A', word: 'Alligator', emoji: '🐊' },
+            { letter: 'B', word: 'Bear', emoji: '🐻' },
+            { letter: 'C', word: 'Cat', emoji: '🐈' },
+            { letter: 'D', word: 'Dog', emoji: '🐕' },
+            { letter: 'E', word: 'Elephant', emoji: '🐘' },
+            { letter: 'F', word: 'Fox', emoji: '🦊' },
+            { letter: 'G', word: 'Giraffe', emoji: '🦒' },
+            { letter: 'H', word: 'Hippo', emoji: '🦛' },
+            { letter: 'I', word: 'Iguana', emoji: '🦎' },
+            { letter: 'J', word: 'Jaguar', emoji: '🐆' },
+            { letter: 'K', word: 'Koala', emoji: '🐨' },
+            { letter: 'L', word: 'Lion', emoji: '🦁' },
+            { letter: 'M', word: 'Monkey', emoji: '🐒' },
+            { letter: 'N', word: 'Newt', emoji: '🦎' },
+            { letter: 'O', word: 'Owl', emoji: '🦉' },
+            { letter: 'P', word: 'Parrot', emoji: '🦜' },
+            { letter: 'Q', word: 'Quail', emoji: '🐦' },
+            { letter: 'R', word: 'Rabbit', emoji: '🐰' },
+            { letter: 'S', word: 'Snake', emoji: '🐍' },
+            { letter: 'T', word: 'Tiger', emoji: '🐅' },
+            { letter: 'U', word: 'Unicorn', emoji: '🦄' },
+            { letter: 'V', word: 'Vulture', emoji: '🦅' },
+            { letter: 'W', word: 'Wolf', emoji: '🐺' },
+            { letter: 'X', word: 'X-ray fish', emoji: '🐟' },
+            { letter: 'Y', word: 'Yak', emoji: '🐃' },
+            { letter: 'Z', word: 'Zebra', emoji: '🦓' }
+        ];
+
+        // Dice faces for animation
+        const diceFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+
+        // Roll dice function
+        function rollDice() {
+            if (isRolling || playerPosition >= 26) return;
+            isRolling = true;
+
+            // Disable button during roll
+            diceBtn.disabled = true;
+            diceBtn.classList.add('opacity-75');
+
+            // Animate dice
+            diceIcon.classList.add('animate-dice-roll');
+            
+            // Show rolling animation
+            let rollCount = 0;
+            const rollInterval = setInterval(() => {
+                diceResult.textContent = diceFaces[Math.floor(Math.random() * 6)];
+                rollCount++;
+                if (rollCount >= 10) {
+                    clearInterval(rollInterval);
+                    finishRoll();
+                }
+            }, 100);
+        }
+
+        function finishRoll() {
+            // Get final dice value (1-6)
+            const roll = Math.floor(Math.random() * 6) + 1;
+            diceResult.textContent = roll;
+            
+            // Remove dice animation
+            diceIcon.classList.remove('animate-dice-roll');
+            
+            // Update total steps
+            totalSteps += roll;
+            totalStepsEl.textContent = totalSteps;
+            
+            // Move player
+            movePlayer(roll);
+        }
+
+        function movePlayer(steps) {
+            const oldPosition = playerPosition;
+            const targetPosition = Math.min(playerPosition + steps, 26); // Max is finish (26)
+
+            // Animate movement step by step
+            let currentStep = oldPosition;
+            const moveInterval = setInterval(() => {
+                currentStep++;
+                if (currentStep > targetPosition) {
+                    clearInterval(moveInterval);
+                    playerPosition = targetPosition;
+                    showMessage();
+                    
+                    // Re-enable button
+                    setTimeout(() => {
+                        diceBtn.disabled = false;
+                        diceBtn.classList.remove('opacity-75');
+                        isRolling = false;
+                    }, 300);
+                    return;
+                }
+                updatePlayerVisual(currentStep);
+            }, 250);
+        }
+
+        function updatePlayerVisual(pos) {
+            // Hide all player markers
+            document.querySelectorAll('.player-marker').forEach(marker => {
+                marker.classList.add('hidden');
+            });
+
+            // Remove highlight from all tiles
+            document.querySelectorAll('.letter-tile').forEach(tile => {
+                tile.classList.remove('current-tile', 'animate-wiggle');
+            });
+
+            // Show current position marker
+            let markerId, tileId;
+            if (pos === -1) {
+                markerId = 'player-start';
+                tileId = 'tile-start';
+                currentLetter.textContent = 'START 🏁';
+            } else if (pos >= 26) {
+                markerId = 'player-finish';
+                tileId = 'tile-finish';
+                currentLetter.textContent = '🏆 WINNER!';
+            } else {
+                markerId = `player-${pos}`;
+                tileId = `tile-${pos}`;
+                currentLetter.textContent = `${alphabet[pos].letter} - ${alphabet[pos].emoji}`;
+            }
+
+            const marker = document.getElementById(markerId);
+            if (marker) {
+                marker.classList.remove('hidden');
+            }
+
+            const currentTile = document.getElementById(tileId);
+            if (currentTile) {
+                currentTile.classList.add('current-tile', 'animate-wiggle');
+                // Scroll tile into view on mobile
+                currentTile.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        }
+
+        function showMessage() {
+            if (playerPosition >= 26) {
+                // Player won!
+                setTimeout(() => {
+                    winModal.classList.remove('hidden');
+                    createConfetti();
+                }, 300);
+            } else if (playerPosition >= 0) {
+                const letterData = alphabet[playerPosition];
+                messageBox.classList.remove('hidden');
+                messageText.innerHTML = `${letterData.emoji} <span class="text-pink-500">${letterData.letter}</span> is for <span class="text-green-500">${letterData.word}</span>! ${letterData.emoji}`;
+                
+                // Speak the letter (if supported)
+                if ('speechSynthesis' in window) {
+                    // Cancel any ongoing speech
+                    speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(`${letterData.letter} is for ${letterData.word}`);
+                    utterance.rate = 0.8;
+                    utterance.pitch = 1.2;
+                    speechSynthesis.speak(utterance);
+                }
+
+                // Hide message after 3 seconds
+                setTimeout(() => {
+                    messageBox.classList.add('hidden');
+                }, 3000);
+            }
+        }
+
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3', '#f38181', '#aa96da', '#fcbad3'];
+            for (let i = 0; i < 80; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.top = '-20px';
+                    confetti.style.width = (8 + Math.random() * 8) + 'px';
+                    confetti.style.height = (8 + Math.random() * 8) + 'px';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                    document.body.appendChild(confetti);
+
+                    // Animate falling
+                    const animation = confetti.animate([
+                        { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                        { transform: `translateY(100vh) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+                    ], {
+                        duration: 2500 + Math.random() * 1500,
+                        easing: 'ease-out'
+                    });
+
+                    animation.onfinish = () => confetti.remove();
+                }, i * 30);
+            }
+        }
+
+        function resetGame() {
+            playerPosition = -1;
+            totalSteps = 0;
+            totalStepsEl.textContent = '0';
+            diceResult.textContent = '-';
+            winModal.classList.add('hidden');
+            messageBox.classList.add('hidden');
+            updatePlayerVisual(-1);
+            isRolling = false;
+            diceBtn.disabled = false;
+            diceBtn.classList.remove('opacity-75');
+        }
+
+        // Event Listeners
+        diceBtn.addEventListener('click', rollDice);
+        playAgainBtn.addEventListener('click', resetGame);
+
+        // Click on tiles to hear the letter
+        document.querySelectorAll('.letter-tile[data-letter]').forEach(tile => {
+            tile.addEventListener('click', () => {
+                const letter = tile.dataset.letter;
+                const letterData = alphabet.find(a => a.letter === letter);
+                if (letterData && 'speechSynthesis' in window) {
+                    speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(`${letterData.letter} is for ${letterData.word}`);
+                    utterance.rate = 0.8;
+                    utterance.pitch = 1.2;
+                    speechSynthesis.speak(utterance);
+                    
+                    // Visual feedback
+                    tile.classList.add('animate-pop');
+                    setTimeout(() => tile.classList.remove('animate-pop'), 300);
+                }
+            });
+        });
+
+        // Keyboard support - press space or enter to roll
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'Enter') {
+                e.preventDefault();
+                rollDice();
+            }
+        });
+
+        // Initialize game
+        updatePlayerVisual(-1);
+    </script>
 </body>
 </html>
