@@ -396,7 +396,8 @@
                 <img id="animalImage" src="" alt="Animal" class="max-h-40 sm:max-h-48 md:max-h-56 mx-auto rounded-xl shadow-lg border-4 border-white">
             </div>
             
-            <h2 id="letterTitle" class="title-font text-3xl sm:text-4xl md:text-5xl text-purple-600 mb-2"></h2>
+            <h2 id="letterTitle" class="title-font text-3xl sm:text-4xl md:text-5xl text-purple-600 mb-1"></h2>
+            <p id="letterPhonetic" class="text-lg sm:text-xl md:text-2xl text-indigo-500 font-bold mb-1"></p>
             <p id="letterWord" class="text-lg sm:text-xl md:text-2xl text-pink-500 font-bold mb-3 sm:mb-4"></p>
             
             <!-- Letter Sound Button -->
@@ -458,132 +459,132 @@
 
         // Alphabet data with multiple animals per letter
         const alphabet = [
-            { letter: 'A', word: 'Alligator', emoji: '🐊', animals: [
+            { letter: 'A', phonetic: '/æ/', word: 'Alligator', emoji: '🐊', animals: [
                 { name: 'Alligator', image: 'Alligator.jpg', emoji: '🐊' },
                 { name: 'Antelope', image: 'Antelope.jpg', emoji: '🦌' },
                 { name: 'Ape', image: 'Ape.jpg', emoji: '🦧' }
             ]},
-            { letter: 'B', word: 'Bear', emoji: '🐻', animals: [
+            { letter: 'B', phonetic: '/b/', word: 'Bear', emoji: '🐻', animals: [
                 { name: 'Bear', image: 'Bear.jpg', emoji: '🐻' },
                 { name: 'Bat', image: 'Bat.jpg', emoji: '🦇' },
                 { name: 'Buffalo', image: 'Buffalo.jpg', emoji: '🐃' }
             ]},
-            { letter: 'C', word: 'Cat', emoji: '🐈', animals: [
+            { letter: 'C', phonetic: '/k/', word: 'Cat', emoji: '🐈', animals: [
                 { name: 'Cat', image: 'Cat.jpg', emoji: '🐈' },
                 { name: 'Cow', image: 'Cow.jpg', emoji: '🐄' },
                 { name: 'Crocodile', image: 'Crocodile.jpg', emoji: '🐊' }
             ]},
-            { letter: 'D', word: 'Dog', emoji: '🐕', animals: [
+            { letter: 'D', phonetic: '/d/', word: 'Dog', emoji: '🐕', animals: [
                 { name: 'Dog', image: 'Dog.jpg', emoji: '🐕' },
                 { name: 'Dolphin', image: 'Dolphin.jpg', emoji: '🐬' },
                 { name: 'Deer', image: 'Deer.jpg', emoji: '🦌' }
             ]},
-            { letter: 'E', word: 'Elephant', emoji: '🐘', animals: [
+            { letter: 'E', phonetic: '/ɛ/', word: 'Elephant', emoji: '🐘', animals: [
                 { name: 'Elephant', image: 'Elephant.jpg', emoji: '🐘' },
                 { name: 'Eagle', image: 'Eagle.jpg', emoji: '🦅' },
                 { name: 'Eel', image: 'Eel.jpg', emoji: '🐍' }
             ]},
-            { letter: 'F', word: 'Fox', emoji: '🦊', animals: [
+            { letter: 'F', phonetic: '/f/', word: 'Fox', emoji: '🦊', animals: [
                 { name: 'Fox', image: 'Fox.jpg', emoji: '🦊' },
                 { name: 'Frog', image: 'Frog.jpg', emoji: '🐸' },
                 { name: 'Fish', image: 'Fish.jpg', emoji: '🐟' }
             ]},
-            { letter: 'G', word: 'Giraffe', emoji: '🦒', animals: [
+            { letter: 'G', phonetic: '/g/', word: 'Giraffe', emoji: '🦒', animals: [
                 { name: 'Giraffe', image: 'Giraffe.jpg', emoji: '🦒' },
                 { name: 'Goat', image: 'Goat.jpg', emoji: '🐐' },
                 { name: 'Gorilla', image: 'Gorilla.jpg', emoji: '🦍' }
             ]},
-            { letter: 'H', word: 'Hippo', emoji: '🦛', animals: [
+            { letter: 'H', phonetic: '/h/', word: 'Hippo', emoji: '🦛', animals: [
                 { name: 'Hippo', image: 'Hippo.jpg', emoji: '🦛' },
                 { name: 'Horse', image: 'Horse.jpg', emoji: '🐎' },
                 { name: 'Hamster', image: 'Hamster.jpg', emoji: '🐹' }
             ]},
-            { letter: 'I', word: 'Iguana', emoji: '🦎', animals: [
+            { letter: 'I', phonetic: '/ɪ/', word: 'Iguana', emoji: '🦎', animals: [
                 { name: 'Iguana', image: 'Iguana.jpg', emoji: '🦎' },
                 { name: 'Insect', image: 'Insects.jpg', emoji: '🐛' },
                 { name: 'Impala', image: 'Impala.jpg', emoji: '🦌' }
             ]},
-            { letter: 'J', word: 'Jaguar', emoji: '🐆', animals: [
+            { letter: 'J', phonetic: '/dʒ/', word: 'Jaguar', emoji: '🐆', animals: [
                 { name: 'Jaguar', image: 'Jaguar.jpg', emoji: '🐆' },
                 { name: 'Jellyfish', image: 'Jellyfish.jpg', emoji: '🪼' },
                 { name: 'Jackal', image: 'Jackal.jpg', emoji: '🐺' }
             ]},
-            { letter: 'K', word: 'Koala', emoji: '🐨', animals: [
+            { letter: 'K', phonetic: '/k/', word: 'Koala', emoji: '🐨', animals: [
                 { name: 'Koala', image: 'Koala.jpg', emoji: '🐨' },
                 { name: 'Kangaroo', image: 'Kangaroo.jpg', emoji: '🦘' },
                 { name: 'Kingfisher', image: 'Kingfisher.jpg', emoji: '🐦' }
             ]},
-            { letter: 'L', word: 'Lion', emoji: '🦁', animals: [
+            { letter: 'L', phonetic: '/l/', word: 'Lion', emoji: '🦁', animals: [
                 { name: 'Lion', image: 'Lion.png', emoji: '🦁' },
                 { name: 'Leopard', image: 'Leopard.jpg', emoji: '🐆' },
                 { name: 'Lizard', image: 'Lizard.png', emoji: '🦎' }
             ]},
-            { letter: 'M', word: 'Monkey', emoji: '🐒', animals: [
+            { letter: 'M', phonetic: '/m/', word: 'Monkey', emoji: '🐒', animals: [
                 { name: 'Monkey', image: 'Monkey.jpg', emoji: '🐒' },
                 { name: 'Mouse', image: 'Mouse.jpg', emoji: '🐭' },
                 { name: 'Moose', image: 'Moose.jpg', emoji: '🫎' }
             ]},
-            { letter: 'N', word: 'Newt', emoji: '🦎', animals: [
+            { letter: 'N', phonetic: '/n/', word: 'Newt', emoji: '🦎', animals: [
                 { name: 'Newt', image: 'Newt.jpg', emoji: '🦎' },
                 { name: 'Narwhal', image: 'Narwhal.jpg', emoji: '🐳' },
                 { name: 'Nightingale', image: 'Nightingale.jpg', emoji: '🐦' }
             ]},
-            { letter: 'O', word: 'Owl', emoji: '🦉', animals: [
+            { letter: 'O', phonetic: '/ɒ/', word: 'Owl', emoji: '🦉', animals: [
                 { name: 'Owl', image: 'Owl.jpg', emoji: '🦉' },
                 { name: 'Octopus', image: 'Octopus.jpg', emoji: '🐙' },
                 { name: 'Ostrich', image: 'Ostrich.jpg', emoji: '🦤' }
             ]},
-            { letter: 'P', word: 'Parrot', emoji: '🦜', animals: [
+            { letter: 'P', phonetic: '/p/', word: 'Parrot', emoji: '🦜', animals: [
                 { name: 'Parrot', image: 'Parrot.jpg', emoji: '🦜' },
                 { name: 'Penguin', image: 'Penguin.jpg', emoji: '🐧' },
                 { name: 'Pig', image: 'Pig.jpg', emoji: '🐷' }
             ]},
-            { letter: 'Q', word: 'Quail', emoji: '🐦', animals: [
+            { letter: 'Q', phonetic: '/kw/', word: 'Quail', emoji: '🐦', animals: [
                 { name: 'Quail', image: 'Quail.jpg', emoji: '🐦' },
                 { name: 'Queen Bee', image: 'Queen_bee.jpg', emoji: '🐝' },
                 { name: 'Quokka', image: 'Quokka.jpg', emoji: '🐹' }
             ]},
-            { letter: 'R', word: 'Rabbit', emoji: '🐰', animals: [
+            { letter: 'R', phonetic: '/r/', word: 'Rabbit', emoji: '🐰', animals: [
                 { name: 'Rabbit', image: 'Rabbit.jpg', emoji: '🐰' },
                 { name: 'Raccoon', image: 'Raccoon.jpg', emoji: '🦝' },
                 { name: 'Rhinoceros', image: 'Rhinoceros.jpg', emoji: '🦏' }
             ]},
-            { letter: 'S', word: 'Snake', emoji: '🐍', animals: [
+            { letter: 'S', phonetic: '/s/', word: 'Snake', emoji: '🐍', animals: [
                 { name: 'Snake', image: 'Snake.jpg', emoji: '🐍' },
                 { name: 'Sheep', image: 'Sheep.jpg', emoji: '🐑' },
                 { name: 'Shark', image: 'Shark.jpg', emoji: '🦈' }
             ]},
-            { letter: 'T', word: 'Tiger', emoji: '🐅', animals: [
+            { letter: 'T', phonetic: '/t/', word: 'Tiger', emoji: '🐅', animals: [
                 { name: 'Tiger', image: 'Tiger.jpg', emoji: '🐅' },
                 { name: 'Turtle', image: 'Turtle.jpg', emoji: '🐢' },
                 { name: 'Turkey', image: 'Turkey.jpg', emoji: '🦃' }
             ]},
-            { letter: 'U', word: 'Unicorn', emoji: '🦄', animals: [
+            { letter: 'U', phonetic: '/ʌ/', word: 'Unicorn', emoji: '🦄', animals: [
                 { name: 'Unicorn', image: 'Unicorn.jpg', emoji: '🦄' },
                 { name: 'Urchin', image: 'Urchin.jpg', emoji: '🪸' },
                 { name: 'Uakari', image: 'Uakari.jpg', emoji: '🐵' }
             ]},
-            { letter: 'V', word: 'Vulture', emoji: '🦅', animals: [
+            { letter: 'V', phonetic: '/v/', word: 'Vulture', emoji: '🦅', animals: [
                 { name: 'Vulture', image: 'Vulture.jpg', emoji: '🦅' },
                 { name: 'Vicuna', image: 'Vicuna.jpg', emoji: '🦙' },
                 { name: 'Viper', image: 'Viper.jpg', emoji: '🐍' }
             ]},
-            { letter: 'W', word: 'Wolf', emoji: '🐺', animals: [
+            { letter: 'W', phonetic: '/w/', word: 'Wolf', emoji: '🐺', animals: [
                 { name: 'Wolf', image: 'Wolf.jpg', emoji: '🐺' },
                 { name: 'Whale', image: 'Whale.jpg', emoji: '🐳' },
                 { name: 'Worm', image: 'Worm.jpg', emoji: '🪱' }
             ]},
-            { letter: 'X', word: 'X-ray Fish', emoji: '🐟', animals: [
+            { letter: 'X', phonetic: '/ks/', word: 'X-ray Fish', emoji: '🐟', animals: [
                 { name: 'X-ray Fish', image: 'X-ray_fish.jpg', emoji: '🐟' },
                 { name: 'Xenops', image: 'Xenops.jpg', emoji: '🐦' },
                 { name: 'Xantus Hummingbird', image: 'Xantus_Hummingbird.jpg', emoji: '🐦' }
             ]},
-            { letter: 'Y', word: 'Yak', emoji: '🐃', animals: [
+            { letter: 'Y', phonetic: '/j/', word: 'Yak', emoji: '🐃', animals: [
                 { name: 'Yak', image: 'Yak.jpg', emoji: '🐃' },
                 { name: 'Yellowfin Tuna', image: 'Yellowfin_tuna.jpg', emoji: '🐟' },
                 { name: 'Yabby', image: 'Yabby.jpg', emoji: '🦞' }
             ]},
-            { letter: 'Z', word: 'Zebra', emoji: '🦓', animals: [
+            { letter: 'Z', phonetic: '/z/', word: 'Zebra', emoji: '🦓', animals: [
                 { name: 'Zebra', image: 'Zebra.jpg', emoji: '🦓' },
                 { name: 'Zebu', image: 'Zebu.jpg', emoji: '🐂' },
                 { name: 'Zorilla', image: 'Zorilla.jpg', emoji: '🦨' }
@@ -703,6 +704,7 @@
             
             // Update modal content
             letterTitle.textContent = letterData.letter;
+            document.getElementById('letterPhonetic').textContent = `${letterData.letter} - ${letterData.phonetic}`;
             letterWord.textContent = `${letterData.letter} is for ${letterData.word}!`;
             letterWord.classList.remove('hidden');
             
@@ -736,6 +738,10 @@
         // Show animal image and speak animal name
         function showAnimal(animal, letter) {
             // Update the text to show clicked animal
+            const letterData = alphabet.find(a => a.letter === letter);
+            if (letterData) {
+                document.getElementById('letterPhonetic').textContent = `${letter} - ${letterData.phonetic}`;
+            }
             letterWord.textContent = `${letter} is for ${animal.name}!`;
             letterWord.classList.remove('hidden');
             
