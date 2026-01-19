@@ -393,7 +393,7 @@
             
             <!-- Animal Image Display -->
             <div id="animalImageContainer" class="mb-4">
-                <img id="animalImage" src="" alt="Animal" class="max-h-40 sm:max-h-48 md:max-h-56 mx-auto rounded-xl shadow-lg border-4 border-white">
+                <img id="animalImage" src="" alt="Animal" class="max-h-40 sm:max-h-48 md:max-h-56 mx-auto rounded-xl shadow-lg border-4 border-white cursor-pointer hover:scale-105 transition-transform">
             </div>
             
             <h2 id="letterTitle" class="title-font text-3xl sm:text-4xl md:text-5xl text-purple-600 mb-1"></h2>
@@ -916,6 +916,7 @@
         }
 
         function closeLetterPopup() {
+            stopAllAudio();
             letterModal.classList.add('hidden');
             currentLetterData = null;
         }
@@ -984,6 +985,14 @@
         playLetterSoundBtn.addEventListener('click', () => {
             if (currentLetterData) {
                 playLetterSound(currentLetterData);
+            }
+        });
+        
+        // Click on animal image to hear TTS
+        animalImage.addEventListener('click', () => {
+            if (currentLetterData) {
+                const animalName = animalImage.alt;
+                speakAnimalName(animalName, currentLetterData.letter);
             }
         });
 
