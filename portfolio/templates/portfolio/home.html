@@ -8,6 +8,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <title>🎲 Alphabet Adventure Game!</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=FREE"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Fredoka+One&display=swap" rel="stylesheet">
     <style>
         * {
@@ -386,16 +387,31 @@
     </footer>
 
     <!-- Letter Pop-up Modal -->
-    <div id="letterModal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-3 sm:p-4">
-        <div class="relative bg-gradient-to-br from-yellow-100 via-pink-100 to-purple-100 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 max-w-xs sm:max-w-sm md:max-w-md w-full mx-2 text-center transform animate-pop shadow-2xl border-4 border-yellow-400">
-            <button id="closeLetterModal" class="absolute top-2 right-2 sm:top-3 sm:right-3 text-2xl sm:text-3xl text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">✖️</button>
-            <p id="letterEmoji" class="text-6xl sm:text-7xl md:text-8xl mb-3 sm:mb-4 animate-bounce"></p>
-            <h2 id="letterTitle" class="title-font text-4xl sm:text-5xl md:text-6xl text-purple-600 mb-2 sm:mb-3"></h2>
-            <p id="letterWord" class="text-xl sm:text-2xl md:text-3xl text-pink-500 font-bold mb-4 sm:mb-5"></p>
-            <button id="sayAgainBtn" 
-                    class="bg-gradient-to-r from-green-400 to-blue-500 text-white text-base sm:text-lg md:text-xl font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-full active:scale-95 transition-transform cursor-pointer shadow-lg">
-                🔊 Say Again!
-            </button>
+    <div id="letterModal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto">
+        <div class="relative bg-gradient-to-br from-yellow-100 via-pink-100 to-purple-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 max-w-xs sm:max-w-md md:max-w-lg w-full mx-2 text-center transform animate-pop shadow-2xl border-4 border-yellow-400 my-4">
+            <button id="closeLetterModal" class="absolute top-2 right-2 sm:top-3 sm:right-3 text-2xl sm:text-3xl text-gray-400 hover:text-gray-600 transition-colors cursor-pointer z-10">✖️</button>
+            
+            <!-- Animal Image Display -->
+            <div id="animalImageContainer" class="mb-4">
+                <img id="animalImage" src="" alt="Animal" class="max-h-40 sm:max-h-48 md:max-h-56 mx-auto rounded-xl shadow-lg border-4 border-white">
+            </div>
+            
+            <h2 id="letterTitle" class="title-font text-3xl sm:text-4xl md:text-5xl text-purple-600 mb-2"></h2>
+            <p id="letterWord" class="text-lg sm:text-xl md:text-2xl text-pink-500 font-bold mb-3 sm:mb-4"></p>
+            
+            <!-- Letter Sound Button -->
+            <div class="mb-4">
+                <button id="playLetterSoundBtn" 
+                        class="bg-gradient-to-r from-purple-400 to-pink-500 text-white text-sm sm:text-base md:text-lg font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-full active:scale-95 transition-transform cursor-pointer shadow-lg">
+                    🔤 Letter Sound
+                </button>
+            </div>
+            
+            <!-- Animal Buttons -->
+            <p class="text-sm sm:text-base text-gray-600 mb-2">Click an animal to see its picture!</p>
+            <div id="animalButtonsContainer" class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+                <!-- Animal buttons will be dynamically inserted here -->
+            </div>
         </div>
     </div>
 
@@ -431,41 +447,147 @@
 
         // Letter Modal Elements
         const letterModal = document.getElementById('letterModal');
-        const letterEmoji = document.getElementById('letterEmoji');
         const letterTitle = document.getElementById('letterTitle');
         const letterWord = document.getElementById('letterWord');
         const closeLetterModal = document.getElementById('closeLetterModal');
-        const sayAgainBtn = document.getElementById('sayAgainBtn');
+        const playLetterSoundBtn = document.getElementById('playLetterSoundBtn');
+        const animalButtonsContainer = document.getElementById('animalButtonsContainer');
+        const animalImageContainer = document.getElementById('animalImageContainer');
+        const animalImage = document.getElementById('animalImage');
         let currentLetterData = null;
 
-        // Alphabet data
+        // Alphabet data with multiple animals per letter
         const alphabet = [
-            { letter: 'A', word: 'Alligator', emoji: '🐊' },
-            { letter: 'B', word: 'Bear', emoji: '🐻' },
-            { letter: 'C', word: 'Cat', emoji: '🐈' },
-            { letter: 'D', word: 'Dog', emoji: '🐕' },
-            { letter: 'E', word: 'Elephant', emoji: '🐘' },
-            { letter: 'F', word: 'Fox', emoji: '🦊' },
-            { letter: 'G', word: 'Giraffe', emoji: '🦒' },
-            { letter: 'H', word: 'Hippo', emoji: '🦛' },
-            { letter: 'I', word: 'Iguana', emoji: '🦎' },
-            { letter: 'J', word: 'Jaguar', emoji: '🐆' },
-            { letter: 'K', word: 'Koala', emoji: '🐨' },
-            { letter: 'L', word: 'Lion', emoji: '🦁' },
-            { letter: 'M', word: 'Monkey', emoji: '🐒' },
-            { letter: 'N', word: 'Newt', emoji: '🦎' },
-            { letter: 'O', word: 'Owl', emoji: '🦉' },
-            { letter: 'P', word: 'Parrot', emoji: '🦜' },
-            { letter: 'Q', word: 'Quail', emoji: '🐦' },
-            { letter: 'R', word: 'Rabbit', emoji: '🐰' },
-            { letter: 'S', word: 'Snake', emoji: '🐍' },
-            { letter: 'T', word: 'Tiger', emoji: '🐅' },
-            { letter: 'U', word: 'Unicorn', emoji: '🦄' },
-            { letter: 'V', word: 'Vulture', emoji: '🦅' },
-            { letter: 'W', word: 'Wolf', emoji: '🐺' },
-            { letter: 'X', word: 'X-ray fish', emoji: '🐟' },
-            { letter: 'Y', word: 'Yak', emoji: '🐃' },
-            { letter: 'Z', word: 'Zebra', emoji: '🦓' }
+            { letter: 'A', word: 'Alligator', emoji: '🐊', animals: [
+                { name: 'Alligator', image: 'Alligator.jpg', emoji: '🐊' },
+                { name: 'Antelope', image: 'Antelope.jpg', emoji: '🦌' },
+                { name: 'Ape', image: 'Ape.jpg', emoji: '🦧' }
+            ]},
+            { letter: 'B', word: 'Bear', emoji: '🐻', animals: [
+                { name: 'Bear', image: 'Bear.jpg', emoji: '🐻' },
+                { name: 'Bat', image: 'Bat.jpg', emoji: '🦇' },
+                { name: 'Buffalo', image: 'Buffalo.jpg', emoji: '🐃' }
+            ]},
+            { letter: 'C', word: 'Cat', emoji: '🐈', animals: [
+                { name: 'Cat', image: 'Cat.jpg', emoji: '🐈' },
+                { name: 'Cow', image: 'Cow.jpg', emoji: '🐄' },
+                { name: 'Crocodile', image: 'Crocodile.jpg', emoji: '🐊' }
+            ]},
+            { letter: 'D', word: 'Dog', emoji: '🐕', animals: [
+                { name: 'Dog', image: 'Dog.jpg', emoji: '🐕' },
+                { name: 'Dolphin', image: 'Dolphin.jpg', emoji: '🐬' },
+                { name: 'Deer', image: 'Deer.jpg', emoji: '🦌' }
+            ]},
+            { letter: 'E', word: 'Elephant', emoji: '🐘', animals: [
+                { name: 'Elephant', image: 'Elephant.jpg', emoji: '🐘' },
+                { name: 'Eagle', image: 'Eagle.jpg', emoji: '🦅' },
+                { name: 'Eel', image: 'Eel.jpg', emoji: '🐍' }
+            ]},
+            { letter: 'F', word: 'Fox', emoji: '🦊', animals: [
+                { name: 'Fox', image: 'Fox.jpg', emoji: '🦊' },
+                { name: 'Frog', image: 'Frog.jpg', emoji: '🐸' },
+                { name: 'Fish', image: 'Fish.jpg', emoji: '🐟' }
+            ]},
+            { letter: 'G', word: 'Giraffe', emoji: '🦒', animals: [
+                { name: 'Giraffe', image: 'Giraffe.jpg', emoji: '🦒' },
+                { name: 'Goat', image: 'Goat.jpg', emoji: '🐐' },
+                { name: 'Gorilla', image: 'Gorilla.jpg', emoji: '🦍' }
+            ]},
+            { letter: 'H', word: 'Hippo', emoji: '🦛', animals: [
+                { name: 'Hippo', image: 'Hippo.jpg', emoji: '🦛' },
+                { name: 'Horse', image: 'Horse.jpg', emoji: '🐎' },
+                { name: 'Hamster', image: 'Hamster.jpg', emoji: '🐹' }
+            ]},
+            { letter: 'I', word: 'Iguana', emoji: '🦎', animals: [
+                { name: 'Iguana', image: 'Iguana.jpg', emoji: '🦎' },
+                { name: 'Insect', image: 'Insects.jpg', emoji: '🐛' },
+                { name: 'Impala', image: 'Impala.jpg', emoji: '🦌' }
+            ]},
+            { letter: 'J', word: 'Jaguar', emoji: '🐆', animals: [
+                { name: 'Jaguar', image: 'Jaguar.jpg', emoji: '🐆' },
+                { name: 'Jellyfish', image: 'Jellyfish.jpg', emoji: '🪼' },
+                { name: 'Jackal', image: 'Jackal.jpg', emoji: '🐺' }
+            ]},
+            { letter: 'K', word: 'Koala', emoji: '🐨', animals: [
+                { name: 'Koala', image: 'Koala.jpg', emoji: '🐨' },
+                { name: 'Kangaroo', image: 'Kangaroo.jpg', emoji: '🦘' },
+                { name: 'Kingfisher', image: 'Kingfisher.jpg', emoji: '🐦' }
+            ]},
+            { letter: 'L', word: 'Lion', emoji: '🦁', animals: [
+                { name: 'Lion', image: 'Lion.png', emoji: '🦁' },
+                { name: 'Leopard', image: 'Leopard.jpg', emoji: '🐆' },
+                { name: 'Lizard', image: 'Lizard.png', emoji: '🦎' }
+            ]},
+            { letter: 'M', word: 'Monkey', emoji: '🐒', animals: [
+                { name: 'Monkey', image: 'Monkey.jpg', emoji: '🐒' },
+                { name: 'Mouse', image: 'Mouse.jpg', emoji: '🐭' },
+                { name: 'Moose', image: 'Moose.jpg', emoji: '🫎' }
+            ]},
+            { letter: 'N', word: 'Newt', emoji: '🦎', animals: [
+                { name: 'Newt', image: 'Newt.jpg', emoji: '🦎' },
+                { name: 'Narwhal', image: 'Narwhal.jpg', emoji: '🐳' },
+                { name: 'Nightingale', image: 'Nightingale.jpg', emoji: '🐦' }
+            ]},
+            { letter: 'O', word: 'Owl', emoji: '🦉', animals: [
+                { name: 'Owl', image: 'Owl.jpg', emoji: '🦉' },
+                { name: 'Octopus', image: 'Octopus.jpg', emoji: '🐙' },
+                { name: 'Ostrich', image: 'Ostrich.jpg', emoji: '🦤' }
+            ]},
+            { letter: 'P', word: 'Parrot', emoji: '🦜', animals: [
+                { name: 'Parrot', image: 'Parrot.jpg', emoji: '🦜' },
+                { name: 'Penguin', image: 'Penguin.jpg', emoji: '🐧' },
+                { name: 'Pig', image: 'Pig.jpg', emoji: '🐷' }
+            ]},
+            { letter: 'Q', word: 'Quail', emoji: '🐦', animals: [
+                { name: 'Quail', image: 'Quail.jpg', emoji: '🐦' },
+                { name: 'Queen Bee', image: 'Queen%20bee.jpg', emoji: '🐝' },
+                { name: 'Quokka', image: 'Quokka.jpg', emoji: '🐹' }
+            ]},
+            { letter: 'R', word: 'Rabbit', emoji: '🐰', animals: [
+                { name: 'Rabbit', image: 'Rabbit.jpg', emoji: '🐰' },
+                { name: 'Raccoon', image: 'Raccoon.jpg', emoji: '🦝' },
+                { name: 'Rhinoceros', image: 'Rhinoceros.jpg', emoji: '🦏' }
+            ]},
+            { letter: 'S', word: 'Snake', emoji: '🐍', animals: [
+                { name: 'Snake', image: 'Snake.jpg', emoji: '🐍' },
+                { name: 'Sheep', image: 'Sheep.jpg', emoji: '🐑' },
+                { name: 'Shark', image: 'Shark.jpg', emoji: '🦈' }
+            ]},
+            { letter: 'T', word: 'Tiger', emoji: '🐅', animals: [
+                { name: 'Tiger', image: 'Tiger.jpg', emoji: '🐅' },
+                { name: 'Turtle', image: 'Turtle.jpg', emoji: '🐢' },
+                { name: 'Turkey', image: 'Turkey.jpg', emoji: '🦃' }
+            ]},
+            { letter: 'U', word: 'Unicorn', emoji: '🦄', animals: [
+                { name: 'Unicorn', image: 'Unicorn.jpg', emoji: '🦄' },
+                { name: 'Urchin', image: 'Urchin.jpg', emoji: '🪸' },
+                { name: 'Uakari', image: 'Uakari.jpg', emoji: '🐵' }
+            ]},
+            { letter: 'V', word: 'Vulture', emoji: '🦅', animals: [
+                { name: 'Vulture', image: 'Vulture.jpg', emoji: '🦅' },
+                { name: 'Vicuna', image: 'Vicuna.jpg', emoji: '🦙' },
+                { name: 'Viper', image: 'Viper.jpg', emoji: '🐍' }
+            ]},
+            { letter: 'W', word: 'Wolf', emoji: '🐺', animals: [
+                { name: 'Wolf', image: 'Wolf.jpg', emoji: '🐺' },
+                { name: 'Whale', image: 'Whale.jpg', emoji: '🐳' },
+                { name: 'Worm', image: 'Worm.jpg', emoji: '🪱' }
+            ]},
+            { letter: 'X', word: 'X-ray Fish', emoji: '🐟', animals: [
+                { name: 'X-ray Fish', image: 'X-ray%20fish.jpg', emoji: '🐟' },
+                { name: 'Xenops', image: 'Xenops.jpg', emoji: '🐦' },
+                { name: 'Xantus Hummingbird', image: 'Xantus%20Hummingbird.jpg', emoji: '🐦' }
+            ]},
+            { letter: 'Y', word: 'Yak', emoji: '🐃', animals: [
+                { name: 'Yak', image: 'Yak.jpg', emoji: '🐃' },
+                { name: 'Yellowfin Tuna', image: 'Yellowfin%20tuna.jpg', emoji: '🐟' },
+                { name: 'Yabby', image: 'Yabby.jpg', emoji: '🦞' }
+            ]},
+            { letter: 'Z', word: 'Zebra', emoji: '🦓', animals: [
+                { name: 'Zebra', image: 'Zebra.jpg', emoji: '🦓' },
+                { name: 'Zebu', image: 'Zebu.jpg', emoji: '🐂' },
+                { name: 'Zorilla', image: 'Zorilla.jpg', emoji: '🦨' }
+            ]}
         ];
 
         // Dice faces for animation
@@ -580,23 +702,158 @@
             currentLetterData = letterData;
             
             // Update modal content
-            letterEmoji.textContent = letterData.emoji;
             letterTitle.textContent = letterData.letter;
             letterWord.textContent = `${letterData.letter} is for ${letterData.word}!`;
+            letterWord.classList.remove('hidden');
+            
+            // Show first animal's image by default
+            if (letterData.animals && letterData.animals.length > 0) {
+                const firstAnimal = letterData.animals[0];
+                const imagePath = "{% static 'animals/' %}" + firstAnimal.image;
+                animalImage.src = imagePath;
+                animalImage.alt = firstAnimal.name;
+            }
+            
+            // Create animal buttons
+            animalButtonsContainer.innerHTML = '';
+            if (letterData.animals) {
+                letterData.animals.forEach(animal => {
+                    const btn = document.createElement('button');
+                    btn.className = 'bg-gradient-to-r from-green-400 to-blue-500 text-white text-sm sm:text-base font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-xl active:scale-95 transition-transform cursor-pointer shadow-lg hover:from-green-500 hover:to-blue-600';
+                    btn.innerHTML = `${animal.emoji} ${animal.name}`;
+                    btn.addEventListener('click', () => showAnimal(animal, letterData.letter));
+                    animalButtonsContainer.appendChild(btn);
+                });
+            }
             
             // Show modal
             letterModal.classList.remove('hidden');
             
-            // Speak the letter
-            speakLetter(letterData);
+            // Auto-play the letter pronunciation sound
+            playLetterSound(letterData);
+        }
+        
+        // Show animal image and speak animal name
+        function showAnimal(animal, letter) {
+            // Update the text to show clicked animal
+            letterWord.textContent = `${letter} is for ${animal.name}!`;
+            letterWord.classList.remove('hidden');
+            
+            // Display the animal image
+            const imagePath = "{% static 'animals/' %}" + animal.image;
+            animalImage.src = imagePath;
+            animalImage.alt = animal.name;
+            
+            // Speak the animal name
+            speakAnimalName(animal.name, letter);
+        }
+        
+        // Speak animal name using TTS
+        function speakAnimalName(animalName, letter) {
+            stopAllAudio();
+            
+            if (typeof responsiveVoice !== 'undefined' && responsiveVoice.voiceSupport()) {
+                responsiveVoice.speak(
+                    `${letter} is for ${animalName}!`,
+                    'US English Female',
+                    {
+                        pitch: 1.2,
+                        rate: 0.85,
+                        volume: 1
+                    }
+                );
+            } else if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(`${letter} is for ${animalName}!`);
+                
+                const voices = speechSynthesis.getVoices();
+                const femaleVoice = voices.find(v => 
+                    v.name.includes('Zira') || 
+                    v.name.includes('Samantha') || 
+                    v.name.includes('Female') ||
+                    v.name.includes('Karen') ||
+                    v.name.includes('Victoria')
+                ) || voices.find(v => v.lang.startsWith('en'));
+                
+                if (femaleVoice) utterance.voice = femaleVoice;
+                utterance.rate = 0.85;
+                utterance.pitch = 1.4;
+                speechSynthesis.speak(utterance);
+            }
         }
 
-        function speakLetter(letterData) {
+        // Audio element for playing letter sounds
+        let letterAudio = null;
+
+        // Stop any currently playing audio/speech
+        function stopAllAudio() {
+            if (letterAudio) {
+                letterAudio.pause();
+                letterAudio.currentTime = 0;
+            }
+            if (typeof responsiveVoice !== 'undefined') {
+                responsiveVoice.cancel();
+            }
             if ('speechSynthesis' in window) {
                 speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(`${letterData.letter} is for ${letterData.word}`);
-                utterance.rate = 0.8;
-                utterance.pitch = 1.2;
+            }
+        }
+
+        // Play letter pronunciation MP3 (e.g., the sound of the letter "A")
+        function playLetterSound(letterData) {
+            stopAllAudio();
+            
+            // Get the letter (some files are uppercase, some lowercase)
+            const letter = letterData.letter;
+            
+            // Map letters to their correct filename case
+            const filenameCaseMap = {
+                'A': 'A', 'B': 'B', 'C': 'c', 'D': 'd', 'E': 'e', 'F': 'f',
+                'G': 'g', 'H': 'h', 'I': 'i', 'J': 'j', 'K': 'k', 'L': 'L',
+                'M': 'm', 'N': 'n', 'O': 'o', 'P': 'p', 'Q': 'q', 'R': 'r',
+                'S': 's', 'T': 't', 'U': 'u', 'V': 'v', 'W': 'w', 'X': 'x',
+                'Y': 'y', 'Z': 'z'
+            };
+            
+            const filename = filenameCaseMap[letter] || letter.toLowerCase();
+            const audioPath = "{% static 'sounds/' %}" + filename + ".mp3";
+            
+            letterAudio = new Audio(audioPath);
+            letterAudio.volume = 1.0;
+            letterAudio.play().catch(error => {
+                console.log('Audio playback failed:', error);
+            });
+        }
+        
+        // Speak the word using TTS (e.g., "A is for Alligator")
+        function speakWord(letterData) {
+            stopAllAudio();
+            
+            if (typeof responsiveVoice !== 'undefined' && responsiveVoice.voiceSupport()) {
+                responsiveVoice.speak(
+                    `${letterData.letter} is for ${letterData.word}!`,
+                    'US English Female',
+                    {
+                        pitch: 1.2,
+                        rate: 0.85,
+                        volume: 1
+                    }
+                );
+            } else if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(`${letterData.letter} is for ${letterData.word}!`);
+                
+                // Try to find a female voice
+                const voices = speechSynthesis.getVoices();
+                const femaleVoice = voices.find(v => 
+                    v.name.includes('Zira') || 
+                    v.name.includes('Samantha') || 
+                    v.name.includes('Female') ||
+                    v.name.includes('Karen') ||
+                    v.name.includes('Victoria')
+                ) || voices.find(v => v.lang.startsWith('en'));
+                
+                if (femaleVoice) utterance.voice = femaleVoice;
+                utterance.rate = 0.85;
+                utterance.pitch = 1.4;
                 speechSynthesis.speak(utterance);
             }
         }
@@ -667,9 +924,9 @@
 
         // Letter Modal Event Listeners
         closeLetterModal.addEventListener('click', closeLetterPopup);
-        sayAgainBtn.addEventListener('click', () => {
+        playLetterSoundBtn.addEventListener('click', () => {
             if (currentLetterData) {
-                speakLetter(currentLetterData);
+                playLetterSound(currentLetterData);
             }
         });
 
