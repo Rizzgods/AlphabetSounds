@@ -540,7 +540,7 @@
             ]},
             { letter: 'Q', word: 'Quail', emoji: '🐦', animals: [
                 { name: 'Quail', image: 'Quail.jpg', emoji: '🐦' },
-                { name: 'Queen Bee', image: 'Queen%20bee.jpg', emoji: '🐝' },
+                { name: 'Queen Bee', image: 'Queen bee.jpg', emoji: '🐝' },
                 { name: 'Quokka', image: 'Quokka.jpg', emoji: '🐹' }
             ]},
             { letter: 'R', word: 'Rabbit', emoji: '🐰', animals: [
@@ -574,13 +574,13 @@
                 { name: 'Worm', image: 'Worm.jpg', emoji: '🪱' }
             ]},
             { letter: 'X', word: 'X-ray Fish', emoji: '🐟', animals: [
-                { name: 'X-ray Fish', image: 'X-ray%20fish.jpg', emoji: '🐟' },
+                { name: 'X-ray Fish', image: 'X-ray fish.jpg', emoji: '🐟' },
                 { name: 'Xenops', image: 'Xenops.jpg', emoji: '🐦' },
-                { name: 'Xantus Hummingbird', image: 'Xantus%20Hummingbird.jpg', emoji: '🐦' }
+                { name: 'Xantus Hummingbird', image: 'Xantus Hummingbird.jpg', emoji: '🐦' }
             ]},
             { letter: 'Y', word: 'Yak', emoji: '🐃', animals: [
                 { name: 'Yak', image: 'Yak.jpg', emoji: '🐃' },
-                { name: 'Yellowfin Tuna', image: 'Yellowfin%20tuna.jpg', emoji: '🐟' },
+                { name: 'Yellowfin Tuna', image: 'Yellowfin tuna.jpg', emoji: '🐟' },
                 { name: 'Yabby', image: 'Yabby.jpg', emoji: '🦞' }
             ]},
             { letter: 'Z', word: 'Zebra', emoji: '🦓', animals: [
@@ -709,7 +709,7 @@
             // Show first animal's image by default
             if (letterData.animals && letterData.animals.length > 0) {
                 const firstAnimal = letterData.animals[0];
-                const imagePath = "{% static 'animals/' %}" + firstAnimal.image;
+                const imagePath = "{% static 'animals/' %}" + encodeURIComponent(firstAnimal.image);
                 animalImage.src = imagePath;
                 animalImage.alt = firstAnimal.name;
             }
@@ -740,7 +740,7 @@
             letterWord.classList.remove('hidden');
             
             // Display the animal image
-            const imagePath = "{% static 'animals/' %}" + animal.image;
+            const imagePath = "{% static 'animals/' %}" + encodeURIComponent(animal.image);
             animalImage.src = imagePath;
             animalImage.alt = animal.name;
             
