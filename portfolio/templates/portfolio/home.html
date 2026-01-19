@@ -769,10 +769,29 @@
             }
         }
         
-        // Speak animal name using TTS
+        // Audio element for playing animal sounds
+        let animalAudio = null;
+
+        // Speak animal name using pre-generated MP3 files
         function speakAnimalName(animalName, letter) {
             stopAllAudio();
             
+            // Create safe filename (replace spaces and special chars with underscores)
+            const safeName = animalName.replace(/ /g, '_').replace(/-/g, '_');
+            const filename = `${letter}_${safeName}.mp3`;
+            const audioPath = "{% static 'animal_sounds/' %}" + filename;
+            
+            animalAudio = new Audio(audioPath);
+            animalAudio.volume = 1.0;
+            animalAudio.play().catch(error => {
+                console.log('Animal audio playback failed:', error);
+                // Fallback to TTS if MP3 fails
+                speakAnimalNameTTS(animalName, letter);
+            });
+        }
+        
+        // Fallback TTS function (in case MP3 fails)
+        function speakAnimalNameTTS(animalName, letter) {
             const text = `${letter} is for ${animalName}!`;
             
             // Try ResponsiveVoice first (better mobile support)
@@ -795,42 +814,16 @@
             
             // Fallback to Web Speech API
             if ('speechSynthesis' in window) {
-                // Cancel any pending speech
                 speechSynthesis.cancel();
-                
                 const utterance = new SpeechSynthesisUtterance(text);
-                
-                // Get voices (use cached or fetch fresh)
                 let voices = cachedVoices.length > 0 ? cachedVoices : speechSynthesis.getVoices();
-                
-                // Find a suitable English voice
                 const femaleVoice = voices.find(v => 
-                    v.name.includes('Zira') || 
-                    v.name.includes('Samantha') || 
-                    v.name.includes('Female') ||
-                    v.name.includes('Karen') ||
-                    v.name.includes('Victoria') ||
-                    v.name.includes('Google') && v.lang.startsWith('en')
+                    v.name.includes('Zira') || v.name.includes('Samantha') || v.name.includes('Female')
                 ) || voices.find(v => v.lang.startsWith('en')) || voices[0];
-                
                 if (femaleVoice) utterance.voice = femaleVoice;
                 utterance.lang = 'en-US';
                 utterance.rate = 0.85;
                 utterance.pitch = 1.4;
-                utterance.volume = 1;
-                
-                // Workaround for mobile browsers that pause speech
-                const resumeSpeech = () => {
-                    if (speechSynthesis.paused) {
-                        speechSynthesis.resume();
-                    }
-                };
-                
-                utterance.onstart = () => {
-                    // Keep speech alive on mobile
-                    setTimeout(resumeSpeech, 100);
-                };
-                
                 speechSynthesis.speak(utterance);
             }
         }
@@ -843,6 +836,10 @@
             if (letterAudio) {
                 letterAudio.pause();
                 letterAudio.currentTime = 0;
+            }
+            if (animalAudio) {
+                animalAudio.pause();
+                animalAudio.currentTime = 0;
             }
             if (typeof responsiveVoice !== 'undefined') {
                 responsiveVoice.cancel();

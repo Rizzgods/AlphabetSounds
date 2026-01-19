@@ -93,6 +93,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     ('sounds', BASE_DIR / 'Letter_sounds'),
     ('animals', BASE_DIR / 'ANIMALS'),
+    ('animal_sounds', BASE_DIR / 'portfolio' / 'static' / 'animal_sounds'),
 ]
 
 # Default primary key field type
