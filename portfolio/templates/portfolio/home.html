@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>🎲 Alphabet Adventure Game!</title>
+    <title>🎲 Alphabet Sound Adventure Game!</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=FREE"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Fredoka+One&display=swap" rel="stylesheet">
@@ -110,6 +110,19 @@
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-pink-300 via-purple-300 to-indigo-400">
+    <!-- Background Music Audio Element -->
+    <audio id="bgMusic" preload="auto" loop="false"></audio>
+    
+    <!-- Music Toggle Button - Fixed position -->
+    <button id="musicToggleBtn" 
+            class="fixed top-3 right-3 sm:top-4 sm:right-4 z-50 bg-white/90 hover:bg-white 
+                   rounded-full w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center 
+                   shadow-lg border-3 border-yellow-400 text-2xl sm:text-3xl cursor-pointer
+                   transition-all duration-200 hover:scale-110 animate-pulse"
+            title="Music will start when you click anywhere!">
+        🎵
+    </button>
+
     <!-- Floating Decorations - Hidden on mobile for cleaner look -->
     <div class="hidden sm:block fixed top-10 left-10 text-6xl animate-bounce-custom opacity-60 pointer-events-none">🌟</div>
     <div class="hidden sm:block fixed top-20 right-20 text-5xl animate-bounce-custom opacity-60 pointer-events-none" style="animation-delay: 0.5s;">🎈</div>
@@ -121,7 +134,7 @@
     <!-- Header -->
     <header class="text-center py-4 sm:py-6 md:py-8">
         <h1 class="title-font text-2xl sm:text-4xl md:text-6xl lg:text-7xl text-white drop-shadow-lg mb-1 sm:mb-2 md:mb-4 px-2">
-            🎲 Alphabet Adventure! 🎲
+            🎲 Alphabet Sound Adventure Game! 🎲
         </h1>
         <p class="text-base sm:text-lg md:text-2xl text-white/90 drop-shadow px-2">
             Roll the dice and learn your ABCs! 🎉
@@ -775,6 +788,7 @@
         // Speak animal name using pre-generated MP3 files
         function speakAnimalName(animalName, letter) {
             stopAllAudio();
+            duckBgMusic();
             
             // Create safe filename (replace spaces and special chars with underscores)
             const safeName = animalName.replace(/ /g, '_').replace(/-/g, '_');
@@ -783,8 +797,10 @@
             
             animalAudio = new Audio(audioPath);
             animalAudio.volume = 1.0;
+            animalAudio.addEventListener('ended', restoreBgMusic);
             animalAudio.play().catch(error => {
                 console.log('Animal audio playback failed:', error);
+                restoreBgMusic();
                 // Fallback to TTS if MP3 fails
                 speakAnimalNameTTS(animalName, letter);
             });
@@ -792,6 +808,7 @@
         
         // Fallback TTS function (in case MP3 fails)
         function speakAnimalNameTTS(animalName, letter) {
+            duckBgMusic();
             const text = `${letter} is for ${animalName}!`;
             
             // Try ResponsiveVoice first (better mobile support)
@@ -803,12 +820,14 @@
                         {
                             pitch: 1.2,
                             rate: 0.85,
-                            volume: 1
+                            volume: 1,
+                            onend: restoreBgMusic
                         }
                     );
                     return;
                 } catch (e) {
                     console.log('ResponsiveVoice error:', e);
+                    restoreBgMusic();
                 }
             }
             
@@ -824,12 +843,49 @@
                 utterance.lang = 'en-US';
                 utterance.rate = 0.85;
                 utterance.pitch = 1.4;
+                utterance.onend = restoreBgMusic;
                 speechSynthesis.speak(utterance);
             }
         }
 
         // Audio element for playing letter sounds
         let letterAudio = null;
+
+        // Background music ducking (lower volume during TTS/sound playback)
+        const duckVolume = 0.08; // Volume during speech (8%)
+        const duckFadeDuration = 300; // ms to fade down/up
+        
+        function duckBgMusic() {
+            if (!bgMusicEnabled || !bgAudio) return;
+            const steps = 15;
+            const stepTime = duckFadeDuration / steps;
+            const volumeStep = (bgAudio.volume - duckVolume) / steps;
+            let currentStep = 0;
+            
+            const fadeInterval = setInterval(() => {
+                currentStep++;
+                bgAudio.volume = Math.max(bgAudio.volume - volumeStep, duckVolume);
+                if (currentStep >= steps) {
+                    clearInterval(fadeInterval);
+                }
+            }, stepTime);
+        }
+        
+        function restoreBgMusic() {
+            if (!bgMusicEnabled || !bgAudio) return;
+            const steps = 20;
+            const stepTime = 400 / steps;
+            const volumeStep = (maxVolume - bgAudio.volume) / steps;
+            let currentStep = 0;
+            
+            const fadeInterval = setInterval(() => {
+                currentStep++;
+                bgAudio.volume = Math.min(bgAudio.volume + volumeStep, maxVolume);
+                if (currentStep >= steps) {
+                    clearInterval(fadeInterval);
+                }
+            }, stepTime);
+        }
 
         // Stop any currently playing audio/speech
         function stopAllAudio() {
@@ -852,6 +908,7 @@
         // Play letter pronunciation MP3 (e.g., the sound of the letter "A")
         function playLetterSound(letterData) {
             stopAllAudio();
+            duckBgMusic();
             
             // Get the letter (some files are uppercase, some lowercase)
             const letter = letterData.letter;
@@ -870,14 +927,17 @@
             
             letterAudio = new Audio(audioPath);
             letterAudio.volume = 1.0;
+            letterAudio.addEventListener('ended', restoreBgMusic);
             letterAudio.play().catch(error => {
                 console.log('Audio playback failed:', error);
+                restoreBgMusic();
             });
         }
         
         // Speak the word using TTS (e.g., "A is for Alligator")
         function speakWord(letterData) {
             stopAllAudio();
+            duckBgMusic();
             
             if (typeof responsiveVoice !== 'undefined' && responsiveVoice.voiceSupport()) {
                 responsiveVoice.speak(
@@ -886,7 +946,8 @@
                     {
                         pitch: 1.2,
                         rate: 0.85,
-                        volume: 1
+                        volume: 1,
+                        onend: restoreBgMusic
                     }
                 );
             } else if ('speechSynthesis' in window) {
@@ -905,6 +966,7 @@
                 if (femaleVoice) utterance.voice = femaleVoice;
                 utterance.rate = 0.85;
                 utterance.pitch = 1.4;
+                utterance.onend = restoreBgMusic;
                 speechSynthesis.speak(utterance);
             }
         }
@@ -1056,6 +1118,143 @@
 
         // Initialize game
         updatePlayerVisual(-1);
+
+        // ============ BACKGROUND MUSIC WITH FADE IN/OUT ============
+        const bgMusicTracks = [
+            '{% static "bgmusic/1._Ukulele.mp3" %}',
+            '{% static "bgmusic/2._Cooking.mp3" %}',
+            '{% static "bgmusic/3._Whistle_Song.mp3" %}',
+            '{% static "bgmusic/4._Witty.mp3" %}',
+            '{% static "bgmusic/5._Happy.mp3" %}',
+            '{% static "bgmusic/6._Whistle_Song.mp3" %}',
+            '{% static "bgmusic/7._Happy_Vlog_Music.mp3" %}',
+            '{% static "bgmusic/8._Happy.mp3" %}'
+        ];
+        
+        let currentTrackIndex = 0;
+        let bgMusicEnabled = false;
+        const bgAudio = document.getElementById('bgMusic');
+        const musicToggleBtn = document.getElementById('musicToggleBtn');
+        const fadeDuration = 2000; // 2 seconds fade
+        const maxVolume = 0.4; // Max volume (40%)
+        
+        // Shuffle tracks for variety
+        function shuffleTracks() {
+            for (let i = bgMusicTracks.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [bgMusicTracks[i], bgMusicTracks[j]] = [bgMusicTracks[j], bgMusicTracks[i]];
+            }
+        }
+        shuffleTracks();
+        
+        // Fade in function
+        function fadeIn(audio, duration, targetVolume) {
+            audio.volume = 0;
+            audio.play().catch(e => console.log('Audio play failed:', e));
+            
+            const steps = 50;
+            const stepTime = duration / steps;
+            const volumeStep = targetVolume / steps;
+            let currentStep = 0;
+            
+            const fadeInterval = setInterval(() => {
+                currentStep++;
+                audio.volume = Math.min(volumeStep * currentStep, targetVolume);
+                if (currentStep >= steps) {
+                    clearInterval(fadeInterval);
+                }
+            }, stepTime);
+        }
+        
+        // Fade out function
+        function fadeOut(audio, duration, callback) {
+            const steps = 50;
+            const stepTime = duration / steps;
+            const volumeStep = audio.volume / steps;
+            let currentStep = 0;
+            
+            const fadeInterval = setInterval(() => {
+                currentStep++;
+                audio.volume = Math.max(audio.volume - volumeStep, 0);
+                if (currentStep >= steps) {
+                    clearInterval(fadeInterval);
+                    audio.pause();
+                    if (callback) callback();
+                }
+            }, stepTime);
+        }
+        
+        // Play next track with fade
+        function playNextTrack() {
+            currentTrackIndex = (currentTrackIndex + 1) % bgMusicTracks.length;
+            bgAudio.src = bgMusicTracks[currentTrackIndex];
+            fadeIn(bgAudio, fadeDuration, maxVolume);
+        }
+        
+        // Handle track ending - fade out then play next
+        bgAudio.addEventListener('timeupdate', () => {
+            // Start fade out 2 seconds before track ends
+            if (bgAudio.duration - bgAudio.currentTime <= 2 && bgAudio.volume > 0.05) {
+                fadeOut(bgAudio, 1500, playNextTrack);
+            }
+        });
+        
+        // Also handle when track ends naturally
+        bgAudio.addEventListener('ended', () => {
+            playNextTrack();
+        });
+        
+        // Toggle music on/off
+        function toggleBgMusic() {
+            if (bgMusicEnabled) {
+                fadeOut(bgAudio, 1000, () => {
+                    bgMusicEnabled = false;
+                    updateMusicButton();
+                });
+            } else {
+                bgMusicEnabled = true;
+                updateMusicButton();
+                bgAudio.src = bgMusicTracks[currentTrackIndex];
+                fadeIn(bgAudio, fadeDuration, maxVolume);
+            }
+        }
+        
+        function updateMusicButton() {
+            if (bgMusicEnabled) {
+                musicToggleBtn.innerHTML = '🎵';
+                musicToggleBtn.title = 'Turn off music';
+            } else {
+                musicToggleBtn.innerHTML = '🔇';
+                musicToggleBtn.title = 'Turn on music';
+            }
+        }
+        
+        musicToggleBtn.addEventListener('click', (e) => {
+            // If music hasn't started yet, this first click starts it (don't toggle off)
+            if (!bgMusicEnabled) {
+                e.stopPropagation();
+                startMusicOnInteraction();
+                return;
+            }
+            toggleBgMusic();
+        });
+        
+        // Start music on first user interaction (required by browsers)
+        function startMusicOnInteraction() {
+            if (!bgMusicEnabled) {
+                bgMusicEnabled = true;
+                musicToggleBtn.classList.remove('animate-pulse');
+                updateMusicButton();
+                bgAudio.src = bgMusicTracks[currentTrackIndex];
+                fadeIn(bgAudio, fadeDuration, maxVolume);
+            }
+            document.removeEventListener('click', startMusicOnInteraction);
+            document.removeEventListener('touchstart', startMusicOnInteraction);
+        }
+        
+        // Auto-start music on first interaction
+        document.addEventListener('click', startMusicOnInteraction, { once: true });
+        document.addEventListener('touchstart', startMusicOnInteraction, { once: true });
     </script>
 </body>
 </html>
